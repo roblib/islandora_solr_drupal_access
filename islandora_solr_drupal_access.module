@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Solr search limiter for Islandora search with Drupal content in solr.
+ */
+
+
+/**
+ * Implements hook_islandora_solr_query().
+ *
+ * A hack to limit drupal content returned in the search results using
+ * taxonomy access control
+ *
+ * We append a filter to the islandora solr base filter (see the islandora solr
+ * settings Query Defaults setting page).  For this to work you should leave the
+ * namespaces blank in the islandora solr configs and use the solr base filter
+ * to limit to PID namespace ie PID:mynamespace* (you must have a base filter)
+ * We will then append to this filter with the drupal access stuff.
+ *
+ * This allows us to limit Drupal content by taxonomy access control for drupal
+ * content and limit Fedora content using the xacml apis islandora_solr_query
+ * implementation.
+ */
+function islandora_solr_drupal_access_islandora_solr_query($islandora_solr_query) {
+  global $user;
+  $subquery = apachesolr_access_build_subquery($user);
+  $subqueries = $subquery->getFilters();
+  $fq = '';
+  foreach ($subqueries as $sq) {
+    if ($sq['#exclude'] === FALSE && $sq['#name'] != 'hash') {
+      $fq .= $sq['#name'] . ":" . $sq['#value'] . ' OR ';
+    }
+  }
+
+  $fq = substr($fq, 0, strrpos($fq, ' OR '));
+  $islandora_solr_query->solrParams['fq'][0] .= ' OR ' . $fq;
+  var_dump($islandora_solr_query);
+
+}

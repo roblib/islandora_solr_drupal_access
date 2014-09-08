@@ -1,0 +1,7 @@
+name = Islandora Solr Drupal Access
+dependencies[] = islandora_solr
+dependencies[] = apachesolr_access
+description = Limits searches an Islandora Solr index that contains Drupal content, adds a query rewrite to check drupal permissions
+package = Islandora Search
+version = 7.x-dev
+core = 7.x
