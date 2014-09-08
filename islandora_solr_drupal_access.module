@@ -35,6 +35,5 @@ function islandora_solr_drupal_access_islandora_solr_query($islandora_solr_query
 
   $fq = substr($fq, 0, strrpos($fq, ' OR '));
   $islandora_solr_query->solrParams['fq'][0] .= ' OR ' . $fq;
-  var_dump($islandora_solr_query);
 
 }
