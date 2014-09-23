@@ -26,15 +26,20 @@ function islandora_solr_drupal_access_islandora_solr_query($islandora_solr_query
   global $user;
   $subquery = apachesolr_access_build_subquery($user);
   $subqueries = $subquery->getFilters();
-  $hash = apachesolr_site_hash();
-  $fq = "hash:$hash AND (";
+  $fq = '';
   foreach ($subqueries as $sq) {
     if ($sq['#exclude'] === FALSE && $sq['#name'] != 'hash') {
       $fq .= $sq['#name'] . ":" . $sq['#value'] . ' OR ';
     }
   }
 
-  $fq = substr($fq, 0, strrpos($fq, ' OR ')) . ')';
-  $islandora_solr_query->solrParams['fq'][0] .= ' OR ' . "($fq)";
-
+  $fq = substr($fq, 0, strrpos($fq, ' OR '));
+  foreach ($islandora_solr_query->solrParams['fq'] as &$f) {
+    // We want to make sure we append our filter to the correct filter so check
+    // for a useless value, this will have to be added in the islandora query defaults
+    // Solr base filter (OR usethisfilter).
+    if (strstr($f, variable_get('islandora_solr_drupal_access_filter_test','OR usethisfilter'))) {
+      $f .= ' OR ' . "($fq)";
+    }
+  }
 }
