@@ -38,6 +38,7 @@ function islandora_solr_drupal_access_islandora_solr_query($islandora_solr_query
     // We want to make sure we append our filter to the correct filter so check
     // for a useless value, this will have to be added in the islandora query defaults
     // Solr base filter (OR usethisfilter).
+    // TODO add the below variable to an admin section.
     if (strstr($f, variable_get('islandora_solr_drupal_access_filter_test','OR usethisfilter'))) {
       $f .= ' OR ' . "($fq)";
     }
